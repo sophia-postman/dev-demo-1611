@@ -1,0 +1,207 @@
+$kind: collection
+description: |-
+  # 🚗 Vehicle Service API — Getting Started Guide
+
+  ## Overview
+
+  The **Vehicle Service API** is a RESTful API designed to manage a registry of vehicles. It provides a complete set of CRUD (Create, Read, Update, Delete) operations that allow consumers to programmatically add new vehicles to the system, retrieve individual or full lists of vehicles, update vehicle details, and remove vehicles from the registry.
+
+  The API is built around a single core resource — the **Vehicle** — identified by a unique integer `id` and described by attributes such as its VIN (Vehicle Identification Number), make, model, year, mileage, and an optional nickname. It is designed to be lightweight, predictable, and easy to integrate into any application that needs to track or manage vehicle data.
+
+  ---
+
+  ## Typical End Users
+
+  | User Type | Description |
+  |---|---|
+  | **Fleet Managers** | Organizations managing company-owned vehicles who need a central registry to track assets, mileage, and vehicle details. |
+  | **Automotive Dealerships** | Dealerships maintaining an inventory of vehicles for sale or service. |
+  | **Insurance Platforms** | Systems that need to verify vehicle identity via VIN and track ownership history. |
+  | **Mobile & Web App Developers** | Frontend developers building vehicle management dashboards or consumer-facing apps. |
+  | **QA & Test Engineers** | Teams writing automated tests against a vehicle data service to validate API behavior. |
+
+  ---
+
+  ## Common Use Cases
+
+  - **Vehicle Registration:** Add a new vehicle to the registry when it is purchased or assigned to a fleet.
+  - **Inventory Lookup:** Retrieve a full list of all vehicles or look up a specific vehicle by its ID.
+  - **Mileage & Detail Updates:** Update a vehicle's mileage or other attributes after a service event.
+  - **Vehicle Decommissioning:** Delete a vehicle record when it is sold, retired, or removed from a fleet.
+  - **VIN Deduplication:** The API enforces VIN uniqueness, preventing duplicate vehicle entries across the registry.
+
+  ---
+
+  ## Step 1: Authentication
+
+  The Vehicle Service API uses **API Key authentication**. Every request must include a valid API key to be accepted by the server.
+
+  ### How to Add Your API Key in Postman
+
+  1. Open the **Vehicle Service Collection** in the sidebar.
+  2. Click the collection name to open its overview, then select the **Authorization** tab.
+  3. Set the **Auth Type** to `API Key`.
+  4. Set the **Key** field to `x-api-key` (or the header name specified by your API provider).
+  5. Set the **Value** field to your API key — use a variable reference like `{{apiKey}}` rather than pasting the raw key directly (see Step 3 on Vault storage).
+  6. Set **Add to** → `Header`.
+  7. Click **Save**.
+
+  All requests in the collection will now inherit this authentication automatically. You do not need to set auth on individual requests unless you need to override it.
+
+  > **Tip:** If a request returns `401 Unauthorized`, your API key is missing or invalid. Double-check the key value and ensure the correct environment is selected.
+
+  ---
+
+  ## Step 2: Managing Multiple Environments
+
+  Environments let you switch between different API targets (e.g. mock server, staging, production) without editing your requests. The `{{baseUrl}}` variable is used throughout this collection to define the server address.
+
+  ### Environments in This Workspace
+
+  | Environment | `baseUrl` Value |
+  |---|---|
+  | **Vehicle Service Mock** | `https://f977361a-2bf0-41ed-832d-547e50ab6b94.mock.pstmn.io` |
+
+  ### How to Create a New Environment (e.g. for Production)
+
+  1. Click the **Environments** icon in the left sidebar (the eye icon).
+  2. Click **+** to create a new environment and give it a name (e.g. `Vehicle Service Production`).
+  3. Add a variable named `baseUrl` and set its **Initial Value** to your production server URL.
+  4. Add any other variables your environment needs (e.g. `apiKey`).
+  5. Click **Save**.
+
+  ### Switching Environments
+
+  1. Use the **Environment selector** dropdown in the top-right corner of Postman.
+  2. Select the environment you want to use (e.g. `Vehicle Service Mock` for testing).
+  3. All `{{variable}}` references in your requests will resolve to the values in the selected environment.
+
+  > **Best Practice:** Always use the **Mock** environment when exploring or testing the API for the first time. Switch to a staging or production environment only when you are ready to work with live data.
+
+  ---
+
+  ## Step 3: Securely Storing API Keys in the Vault
+
+  Postman Vault is a secure, local secret store that keeps sensitive values like API keys off the network and out of shared environments. Vault values are never synced to Postman's cloud.
+
+  ### How to Store Your API Key in the Vault
+
+  1. Click the **Vault** icon in the bottom-left footer of the Postman app (lock icon).
+  2. Click **Add secret**.
+  3. Set the **Key** to something descriptive, e.g. `vehicle-service-api-key`.
+  4. Set the **Value** to your actual API key.
+  5. Click **Save**.
+
+  ### How to Reference a Vault Secret in a Request
+
+  Use the `{{vault:vehicle-service-api-key}}` syntax anywhere you would normally use a variable — for example, in the collection-level Authorization value field:
+
+  ```
+  {{vault:vehicle-service-api-key}}
+  ```
+
+  > **Why use the Vault?** Unlike environment variables, Vault secrets are stored only on your local machine and are never uploaded to Postman's servers or shared with teammates. This makes them the safest place to store credentials, tokens, and API keys.
+
+  ---
+
+  ## Step 4: Parameters & Request Reference
+
+  ### Collection-Level Variable
+
+  | Variable | Description | Example Value |
+  |---|---|---|
+  | `{{baseUrl}}` | The base URL of the Vehicle Service API server. Set in your active environment. | `https://f977361a-2bf0-41ed-832d-547e50ab6b94.mock.pstmn.io` |
+
+  ### Vehicle Object Schema
+
+  All endpoints work with the following **Vehicle** resource:
+
+  | Field | Type | Required | Description |
+  |---|---|---|---|
+  | `id` | `integer` | Auto-assigned | Unique identifier for the vehicle. Assigned by the server on creation. |
+  | `nickName` | `string` | No | A friendly, human-readable name for the vehicle (e.g. `"The Lisa Marie"`). |
+  | `vin` | `string` | **Yes** | Vehicle Identification Number. Must be unique across all vehicles. |
+  | `make` | `string` | No | The manufacturer of the vehicle (e.g. `"Mercury"`, `"Toyota"`). |
+  | `model` | `string` | No | The model name of the vehicle (e.g. `"Villager"`, `"Camry"`). |
+  | `year` | `string` | No | The model year of the vehicle (e.g. `"1994"`). |
+  | `miles` | `integer` | No | The current odometer reading in miles (e.g. `159864`). |
+
+  ### Endpoint Summary
+
+  | Method | Endpoint | Description |
+  |---|---|---|
+  | `GET` | `/vehicles` | Retrieve a list of all vehicles in the registry. |
+  | `POST` | `/vehicles` | Create and register a new vehicle. |
+  | `GET` | `/vehicles/:id` | Retrieve a single vehicle by its unique integer `id`. |
+  | `PATCH` | `/vehicles/:id` | Partially update one or more fields of an existing vehicle. |
+  | `DELETE` | `/vehicles/:id` | Permanently remove a vehicle from the registry. |
+
+  ### Path Parameter
+
+  | Parameter | Type | Required | Description |
+  |---|---|---|---|
+  | `:id` | `integer` | Yes (for single-vehicle endpoints) | The unique integer ID of the vehicle. Example: `1`. |
+
+  ### Example Request Body — Create a Vehicle (`POST /vehicles`)
+
+  ```json
+  {
+    "nickName": "The Lisa Marie",
+    "vin": "4M2DV11W4RDJ53329",
+    "make": "Mercury",
+    "model": "Villager",
+    "year": "1994",
+    "miles": 159864
+  }
+  ```
+
+  ### Example Request Body — Update a Vehicle (`PATCH /vehicles/:id`)
+
+  Only include the fields you want to change. All fields are optional in a PATCH request.
+
+  ```json
+  {
+    "miles": 162000
+  }
+  ```
+
+  ---
+
+  ## Step 5: Handling Common Errors
+
+  The API returns standard HTTP status codes. Use the table below to diagnose and resolve issues.
+
+  | Status Code | Name | Cause | How to Resolve |
+  |---|---|---|---|
+  | `200 OK` | Success | The request was processed successfully. | No action needed. |
+  | `201 Created` | Created | A new vehicle was successfully created. | No action needed. The response body contains the new vehicle object including its assigned `id`. |
+  | `204 No Content` | Deleted | The vehicle was successfully deleted. | No action needed. No response body is returned. |
+  | `400 Bad Request` | Missing or invalid body | A required field is missing from the request body, or the body is malformed. | Check the error `message` field in the response. Ensure `vin` is included in `POST` requests and that the JSON body is valid. Example: `"Request body missing required attribute: vin"` |
+  | `401 Unauthorized` | Authentication failure | The API key is missing, incorrect, or expired. | Verify your API key is correctly set in the collection Authorization tab. Ensure the active environment contains the correct `apiKey` variable or Vault reference. |
+  | `404 Not Found` | Vehicle not found | The `id` provided in the path does not match any vehicle in the registry. | Confirm the vehicle `id` exists by calling `GET /vehicles` first. Example: `"Vehicle with id: 0 not found."` |
+  | `409 Conflict` | Duplicate VIN | A vehicle with the same VIN already exists in the registry. | Use a unique VIN. Call `GET /vehicles` to check existing records. Example: `"Vehicle with VIN JN8AZ2KR1AT169594 already exists. Existing vehicle ID: 2"` |
+  | `500 Internal Server Error` | Unexpected server error | An unhandled error occurred on the server side. | Retry the request. If the error persists, contact the API owner. Example: `"An unexpected error occurred."` |
+
+  ---
+
+  ## Quick Start Checklist
+
+  - [ ] Select the **Vehicle Service Mock** environment from the environment dropdown.
+  - [ ] Store your API key securely in **Postman Vault** using the key `vault:vehicle-service-api-key`.
+  - [ ] Set the collection-level **Authorization** to `API Key` and reference `{{vault:vehicle-service-api-key}}`.
+  - [ ] Send a `GET /vehicles` request to confirm connectivity and see existing records.
+  - [ ] Send a `POST /vehicles` request with a valid JSON body to create your first vehicle.
+  - [ ] Use the returned `id` to call `GET /vehicles/:id`, `PATCH /vehicles/:id`, or `DELETE /vehicles/:id`.
+
+  ---
+
+  *Vehicle Service API — v1.0.0*
+variables:
+  baseUrl: "{{baseUrl}}"
+auth:
+  - id: a62d3359-ac9b-4691-b9bd-d052df698b79
+    type: apikey
+    name: apikey auth
+    credentials:
+      value: ""
+      key: X-API-Key

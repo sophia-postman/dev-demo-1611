@@ -1,0 +1,23 @@
+# Use this workspace to collaborate
+workspace:
+  id: 45d8c26d-252c-4555-a110-273316f691bc
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  specs:
+    ../postman/specs/Vehicle Service API/index.yaml: db7c7f70-7f64-4622-a9fa-33432d90eab4
+  collections:
+    ../postman/collections/Vehicle Service Tests: 60156583-257d90db-b9df-4cf3-9a1a-7e609ead5a79
+    ../postman/collections/Vehicle Service Collection: 60156580-5c2ad441-c083-42d1-a4ff-1b4ea15bcfd3
+  globals:
+    ../postman/globals/workspace.globals.yaml: 23e466a0-b700-4cb5-8d38-8070de670a66
+resourceNameMappings:
+  specs:
+    - ../postman/specs/Vehicle Service API/index.yaml: Vehicle Service API
+
+# All resources in the `postman/` folder are automatically registered in Local View.
+# Point to additional files outside the `postman/` folder to register them individually. Example:
+#localResources:
+#  collections:
+#    - ../tests/E2E Test Collection/
