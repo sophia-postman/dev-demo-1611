@@ -1,0 +1,20 @@
+id: 01a1e60b-296d-7559-b1e0-40c080bdf1b3
+version: 1
+name: vehicle-service
+slug: new-mock-25cc5
+enableSession: true
+protocol: http
+port: 4500
+autoRestartOnChange: true
+logging:
+  level: verbose
+  showBody: true
+associations:
+  - entityType: collection
+    entityId: ED09FadcAaBCB319bb2e0BCB
+    relation: source
+    syncEnabled: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true
